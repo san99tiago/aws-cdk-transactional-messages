@@ -11,6 +11,10 @@ from aws_cdk import (
     aws_lambda,
     aws_iam,
     aws_lambda_event_sources,
+    aws_cloudwatch,
+    aws_cloudwatch_actions,
+    aws_sns,
+    aws_sns_subscriptions,
 )
 from constructs import Construct
 
@@ -38,9 +42,11 @@ class ApiGatewaySqsLambdaStack(Stack):
 
         # Additional configurations
         self.api_stage_deployment_version = "v1"
+        self.sns_notifications_email = "san99tiagodevsecops+alarms@gmail.com"
 
         # Main methods for the deployment
         self.create_queues()
+        self.create_alarm_and_notifications_for_dlq()
         self.create_lambda()
         self.configure_sqs_event_source_for_lambda()
         self.create_api_gateway()
@@ -76,6 +82,38 @@ class ApiGatewaySqsLambdaStack(Stack):
             ),
         )
 
+    def create_alarm_and_notifications_for_dlq(self):
+        """
+        Create the alarm and SNS notifications for the SQS Dead Letter Queue
+        (DLQ) based on messages on the queue.
+        """
+        # Create SNS topic and email subscription for it
+        self.sns_topic_dlq = aws_sns.Topic(
+            self,
+            id="DLQTopic",
+            topic_name="{}{}-topic".format(self.name_prefix, self.main_resources_name),
+            display_name="{}{}-topic".format(self.name_prefix, self.main_resources_name),
+        )
+        self.sns_topic_dlq.add_subscription(
+            aws_sns_subscriptions.EmailSubscription(self.sns_notifications_email)
+        )
+
+        # Create DLQ alarm for 1+ messages in queue
+        self.dead_letter_queue_alarm = aws_cloudwatch.Alarm(
+            self,
+            id="DLQAlarm",
+            alarm_name="{}{}-alarm".format(self.name_prefix, self.main_resources_name),
+            alarm_description="Messages on DLQ for {} solution".format(self.main_resources_name),
+            metric=self.dead_letter_queue.metric("ApproximateNumberOfMessagesVisible"),
+            threshold=0.5,
+            evaluation_periods=1,
+            actions_enabled=True,
+        )
+
+        # Configure CW Alarm action with the SNS topic
+        self.sns_action_alarm = aws_cloudwatch_actions.SnsAction(self.sns_topic_dlq)
+        self.dead_letter_queue_alarm.add_alarm_action(self.sns_action_alarm)
+
     def create_lambda(self):
         """
         Create the Lambda Function.
@@ -89,7 +127,7 @@ class ApiGatewaySqsLambdaStack(Stack):
         self.lambda_function = aws_lambda.Function(
             self,
             id="Lambda",
-            function_name="{}{}".format(self.name_prefix, self.main_resources_name),
+            function_name="{}{}-lambda".format(self.name_prefix, self.main_resources_name),
             runtime=aws_lambda.Runtime.PYTHON_3_9,
             handler="lambda_function.handler",
             code=aws_lambda.Code.from_asset(PATH_TO_FUNCTION_FOLDER),
