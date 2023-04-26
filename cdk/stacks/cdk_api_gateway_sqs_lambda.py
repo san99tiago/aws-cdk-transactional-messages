@@ -43,6 +43,11 @@ class ApiGatewaySqsLambdaStack(Stack):
         # Additional configurations
         self.api_stage_deployment_version = "v1"
         self.sns_notifications_email = "san99tiagodevsecops+alarms@gmail.com"
+        self.powertools_layer = aws_lambda.LayerVersion.from_layer_version_arn(
+            self,
+            id="Lambda-Powertools",
+            layer_version_arn=f"arn:aws:lambda:{self.region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:31"
+        )
 
         # Main methods for the deployment
         self.create_queues()
@@ -122,6 +127,7 @@ class ApiGatewaySqsLambdaStack(Stack):
         # ! Note--> we must obtain parent dirs to create path (that"s why there is "os.path.dirname()")
         PATH_TO_FUNCTION_FOLDER = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            "lambda",
             "src",
         )
         self.lambda_function = aws_lambda.Function(
@@ -133,7 +139,16 @@ class ApiGatewaySqsLambdaStack(Stack):
             code=aws_lambda.Code.from_asset(PATH_TO_FUNCTION_FOLDER),
             timeout=Duration.seconds(30),
             memory_size=128,
-            environment={"ENVIRONMENT": self.deployment_environment, "OWNER": "Santiago Garcia Arango"},
+            environment={
+                "ENVIRONMENT": self.deployment_environment,
+                "OWNER": "Santiago Garcia Arango",
+                "LOG_LEVEL": "DEBUG",
+            },
+            layers=[self.powertools_layer],
+            tracing=aws_lambda.Tracing.ACTIVE,
+        )
+        self.lambda_function.role.add_managed_policy(
+            aws_iam.ManagedPolicy.from_aws_managed_policy_name("AWSXrayWriteOnlyAccess")
         )
 
     def configure_sqs_event_source_for_lambda(self):
@@ -161,6 +176,7 @@ class ApiGatewaySqsLambdaStack(Stack):
                 stage_name=self.api_stage_deployment_version,
                 description="{} deployment".format(self.api_stage_deployment_version),
                 logging_level=aws_apigateway.MethodLoggingLevel.INFO,
+                tracing_enabled=True,  # Relevant config for X-ray tracing for complete traces
             ),
             default_cors_preflight_options=aws_apigateway.CorsOptions(
                 allow_credentials=False,
@@ -189,6 +205,11 @@ class ApiGatewaySqsLambdaStack(Stack):
 
         # Allow API Gateway Role to "sqs:sendMessage*" to queue
         self.queue.grant_send_messages(self.api_gateway_sqs_integration_role)
+
+        # Allow API Gateway Role to send traces to X-Ray
+        self.api_gateway_sqs_integration_role.add_managed_policy(
+            aws_iam.ManagedPolicy.from_aws_managed_policy_name("AWSXrayWriteOnlyAccess")
+        )
 
     def create_api_gateway_integration_proxy_to_sqs(self):
         """
@@ -220,15 +241,15 @@ class ApiGatewaySqsLambdaStack(Stack):
 
     def create_api_gateway_resource_and_route(self):
         """
-        Create the API Gateway "/send" resource and route for the POST requests,
+        Create the API Gateway "/message" resource and route for the POST requests,
         which are messages that will be integrated via aws_proxy to the SQS.
         """
-        # Create the "<api_endpoint>/send" resource (path)
+        # Create the "<api_endpoint>/message" resource (path)
         self.send_message_api_gateway_resource = self.api_gateway.root.add_resource(
-            path_part="send",
+            path_part="message",
         )
 
-        # Add to the "<api_endpoint>/send" resource the POST method and integration
+        # Add to the "<api_endpoint>/message" resource the POST method and integration
         # Note: the "method_responses" are important, otherwise we get error:
         # ... <Execution failed due to configuration error>
         self.send_message_api_gateway_resource.add_method(
@@ -254,4 +275,9 @@ class ApiGatewaySqsLambdaStack(Stack):
             description="Deployment environment",
         )
 
-        # TODO: Add extra relevant outputs
+        CfnOutput(
+            self,
+            "ApiEndpoint",
+            value=self.api_gateway.url_for_path("/message"),
+            description="API Gateway endpoint",
+        )
