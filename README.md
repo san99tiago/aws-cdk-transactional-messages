@@ -1,11 +1,12 @@
-# AWS-CDK-APIGW-SQS-LAMBDA
+# :incoming_envelope: AWS-CDK-APIGW-SQS-LAMBDA :incoming_envelope:
 
-Serverless solution for transactional "messages" API Gateway backend on top of SQS + Lambda and with Observability logs, traces and service map on X-Ray.
+Serverless AWS architecture to simulate the processing of transactional "messages". <br>
 
+- Designed with API Gateway on top of SQS and Lambda. Equipped with Observability capabilities including detailed logs, traces and service map on X-Ray.
 - Deployed on AWS with Infrastructure as Code on [CDK-Python](https://aws.amazon.com/cdk/) (see [`./cdk`](cdk/) folder).
 - Logging and traces enabled with [Lambda PowerTools](https://github.com/awslabs/aws-lambda-powertools-python) and optimized with their latest Lambda Layer.
-- Backend processing has SQS-retries and eventual failures trigger a CW-Alarm and an Admin-Email is sent via a custom SNS-Topic.
-- The source code for the Lambda Function is a "dummy processing" approach, but can be extend to business logic needs.
+- Backend processing has SQS-retries and eventual failures (SQS-DLQ) trigger a CW-Alarm and an Admin-Email is sent via a custom SNS-Topic.
+- The source code for the Lambda Function is a "dummy processing" approach, but can be extend to any business logic needs.
 
 ## AWS Architecture Diagram
 
@@ -13,9 +14,11 @@ The AWS infrastructure solution is deployed with CDK-Python with the resources d
 
 <img src="assets/aws-cdk-apigw-sqs-lambda-diagram.png" width=90%> <br>
 
+---
+
 ## Observability Results
 
-Any transactional application requires production-level observability, and in this architecture, it's designed as follows:
+Any transactional application requires production-level observability, and, for this architecture, it's designed as follows:
 
 ### Observability: Service Map
 
@@ -31,15 +34,15 @@ Any transactional application requires production-level observability, and in th
 
 ---
 
-## AWS CDK :cloud:
+## Dependencies
+
+### AWS CDK
 
 [AWS Cloud Development Kit](https://aws.amazon.com/cdk/) is an amazing open-source software development framework to programmatically define cloud-based applications with familiar languages. <br>
 
 My personal opinion is that you should learn about CDK when you feel comfortable with cloud-based solutions with IaC on top of [AWS Cloudformation](https://aws.amazon.com/cloudformation/). At that moment, I suggest that if you need to enhance your architectures, it's a good moment to use these CDK-based solutions. <br>
 
 The best way to start is from the [Official AWS Cloud Development Kit (AWS CDK) v2 Documentation](https://docs.aws.amazon.com/cdk/v2/guide/home.html). <br>
-
-## Dependencies
 
 ### Software dependencies
 
@@ -63,7 +66,7 @@ Project deployment/destroy commands are explained in detail at [`./important_com
 
 ## Special thanks
 
-- Thanks to all contributors of the great OpenSource projects that I am using. <br>
+- Big thanks to all the folks who worked hard on these awesome OpenSource projects that I'm using. <br>
 
 ## Author :musical_keyboard:
 
@@ -74,10 +77,11 @@ The information of this repository is based on many online resources, so feel fr
 <table border="1">
     <tr>
         <td>
-            <p align="center">Senior DevOps Engineer passionate about advanced cloud-based solutions and deployments in AWS. I am convinced that today's greatest challenges must be solved by people that love what they do.</p>
+            <p align="center"><img src="assets/SantiagoGarciaArangoCDK.png" width=70%></p>
         </td>
         <td>
-            <p align="center"><img src="assets/SantiagoGarciaArangoCDK.png" width=60%></p>
+            <p align="center">As a Senior DevOps Engineer, I am deeply passionate about implementing cutting-edge cloud-based solutions on AWS.<br> I firmly believe that today's greatest challenges must be solved by the expertise of individuals who are truly passionate about their work.
+            </p>
         </td>
     </tr>
 </table>
