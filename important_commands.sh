@@ -32,6 +32,8 @@ pip install aws-cdk-lib
 
 # Configure AWS credentials (follow steps)
 aws configure
+# --> Alternative 1: Environment variables added to terminal session
+# --> Alternative 2: AWS Cloud9 with the right permissions
 
 # Bootstrap CDK (provision initial resources to work with CDK.. S3, roles, etc)
 #! Change "ACCOUNT-NUMBER" and "REGION" to your needed values 
@@ -56,13 +58,19 @@ pip install -r requirements.txt || pip3 install -r requirements.txt
 # PART 3: Main CDK and Python commands (most used)
 ################################################################################
 
-cdk bootstrap
-source .venv/bin/activate || echo "Make sure that virtual env exists"
+# Activate Python virtual environment and check dependencies installed
+# --> On the root of the repository (same context as this file), run:
+source ./cdk/.venv/bin/activate || echo "Make sure that virtual env exists"
+pip install -r ./cdk/requirements.txt
+pip install -r ./lambda/requirements.txt
+pip install -r ./lambda/requirements-dev.txt
 
-# Test Lambda Python Stack
+# Test Lambda Python Stack (optional)
+# --> On the root of the repository (same context as this file), run:
 python -m pytest
 
 # CDK commands
+# --> On the "./cdk" folder, run:
 cdk bootstrap
 cdk synthesize
 cdk diff

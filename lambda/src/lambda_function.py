@@ -38,7 +38,7 @@ def process_messages(event: SQSEvent):
         # Note: if input does not contain "Message" key, this will raise an error
         message = json.loads(payload)["Message"]
         logger.info("Message: {}".format(message))
-
+    return True
 
 @logger.inject_lambda_context(log_event=True)
 @event_source(data_class=SQSEvent)
@@ -47,7 +47,8 @@ def handler(event: SQSEvent, context: LambdaContext) -> str:
     logger.debug("Starting messages processing")
     tracer.put_metadata(key="details", value="messages processing handler")
     try:
-        process_messages(event)
+        result = process_messages(event)
+        logger.debug(result)
     except Exception as e:
         logger.exception("Error processing the messages")
         raise RuntimeError("Processing failed for the input messages") from e
