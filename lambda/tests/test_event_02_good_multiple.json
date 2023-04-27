@@ -1,0 +1,38 @@
+{
+  "Records": [
+    {
+      "messageId": "4332b17c-b7cd-4aef-8dba-7cb7240e3d0e",
+      "receiptHandle": "AWEBZGy/Ajve1xtBoqIJhPmO0ANH9FWhcpjt7xevdsSw5+BK0OIljV8Jq/6SNgQ9boZKcTdGkK2aaiSo9iCAgsnSyUJ3u3FenB5rOnlOTf3ctMHHEJ4tGrwSR6lx8be8/CggdbtuCxjzZsPU2IUEIo4URuA4Kum54DELIWYaBNTBbfKlvlyKeRilpTh3a3I3rmy2ctn5HkKjGVmIv1WyIPNga3POZ28pxAEcQsVEFuU0fU/Bf9H5sDuj0i47JxzCBuimyFQEN1cMYwE5W7jz54hCEN3wC1blt9/M0U+jWqsC3psmlPb+qkj50ZriJb8bNoIHMutp+ERFy5CGrBJIiVIt8xvsJmkz9LuUhKDOTmwSN9yg9p+jrTD5L6B8yH8/WSu+4XMgK0QDv/BE/5eeLZcv6Q==",
+      "body": "{\n  \"Message\": \"Test Message OK: good example message 1\",\n  \"Details\": \"Test details\"  \n}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "AWSTraceHeader": "Root=1-64495159-17ceb00068aada396a66bd23",
+        "SentTimestamp": "1682526553465",
+        "SenderId": "AROASECKEBOYZPRE774YO:BackplaneAssumeRoleSession",
+        "ApproximateFirstReceiveTimestamp": "1682526553466"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "d46c3294a7ebf36b9a9a99f46b768a9d",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:12345678901:apigw-sqs-lambda-queue",
+      "awsRegion": "us-east-1"
+    },
+    {
+      "messageId": "4332b17c-b7cd-4aef-8dba-7cb7240e3d0e",
+      "receiptHandle": "AWEBZGy/Ajve1xtBoqIJhPmO0ANH9FWhcpjt7xevdsSw5+BK0OIljV8Jq/6SNgQ9boZKcTdGkK2aaiSo9iCAgsnSyUJ3u3FenB5rOnlOTf3ctMHHEJ4tGrwSR6lx8be8/CggdbtuCxjzZsPU2IUEIo4URuA4Kum54DELIWYaBNTBbfKlvlyKeRilpTh3a3I3rmy2ctn5HkKjGVmIv1WyIPNga3POZ28pxAEcQsVEFuU0fU/Bf9H5sDuj0i47JxzCBuimyFQEN1cMYwE5W7jz54hCEN3wC1blt9/M0U+jWqsC3psmlPb+qkj50ZriJb8bNoIHMutp+ERFy5CGrBJIiVIt8xvsJmkz9LuUhKDOTmwSN9yg9p+jrTD5L6B8yH8/WSu+4XMgK0QDv/BE/5eeLZcv6Q==",
+      "body": "{\n  \"Message\": \"Test Message OK: good example message 2\",\n  \"Details\": \"Test details\"  \n}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "AWSTraceHeader": "Root=1-64495159-17ceb00068aada396a66bd23",
+        "SentTimestamp": "1682526553465",
+        "SenderId": "AROASECKEBOYZPRE774YO:BackplaneAssumeRoleSession",
+        "ApproximateFirstReceiveTimestamp": "1682526553466"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "d46c3294a7ebf36b9a9a99f46b768a9d",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:12345678901:apigw-sqs-lambda-queue",
+      "awsRegion": "us-east-1"
+    }
+  ]
+}
