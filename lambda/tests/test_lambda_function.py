@@ -4,7 +4,8 @@ import json
 import unittest
 
 # External imports
-from aws_lambda_powertools.utilities.data_classes import event_source, SQSEvent
+from aws_lambda_powertools.utilities.data_classes import SQSEvent
+from aws_lambda_powertools.utilities.data_classes.sqs_event import SQSRecord
 from moto import mock_sts
 
 # Add path to find lambda directory for own imports
@@ -38,25 +39,12 @@ class TestLambdaFunction(unittest.TestCase):
         Test successful process_messages call for a single message.
         """
         # Load pre-configured event for current test case
-        event = self.load_test_event("test_event_01_good_single.json")
+        event = self.load_test_event("test_event_01_good.json")
 
-        # Middleware to load event with correct SQSEvent data class
+        # Middleware to load event with correct SQSEvent and SQSRecord data classes
         event_sqs = SQSEvent(event)
-        result = _lambda.process_messages(event_sqs)
-
-        self.assertEqual(result, True)
-
-    @mock_sts()
-    def test_process_messages_success_multiple(self):
-        """
-        Test successful process_messages call for multiple messages.
-        """
-        # Load pre-configured event for current test case
-        event = self.load_test_event("test_event_02_good_multiple.json")
-
-        # Middleware to load event with correct SQSEvent data class
-        event_sqs = SQSEvent(event)
-        result = _lambda.process_messages(event_sqs)
+        sqs_record = SQSRecord(event_sqs.get("Records", [])[0])
+        result = _lambda.process_message(sqs_record)
 
         self.assertEqual(result, True)
 
@@ -66,14 +54,15 @@ class TestLambdaFunction(unittest.TestCase):
         Test errors on process_messages call due to wrong message format.
         """
         # Load pre-configured event for current test case
-        event = self.load_test_event("test_event_03_bad.json")
+        event = self.load_test_event("test_event_02_bad.json")
 
-        # Middleware to load event with correct SQSEvent data class
+        # Middleware to load event with correct SQSEvent and SQSRecord data classes
         event_sqs = SQSEvent(event)
+        sqs_record = SQSRecord(event_sqs.get("Records", [])[0])
 
         # Expected an exception intentionally, otherwise fails
         with self.assertRaises(Exception):
-            _lambda.process_messages(event_sqs)
+            _lambda.process_message(sqs_record)
 
 
 if __name__ == "__main__":
