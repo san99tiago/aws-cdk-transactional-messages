@@ -159,6 +159,7 @@ class ApiGatewaySqsLambdaStack(Stack):
             self.queue,
             enabled=True,
             batch_size=5,
+            report_batch_item_failures=True,  # Necessary for processing batches from SQS
         )
         self.lambda_function.add_event_source(self.sqs_event_source)
 
